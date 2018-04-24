@@ -6,6 +6,14 @@
 
 using std::calloc;
 
+class helping_class
+{
+public:
+	char* data;
+	char number;
+	void operator=(bool value);
+};
+
 class bool_array
 {
 private:
@@ -21,14 +29,12 @@ public:
 	void expand();
 	void strip();
 
-	bool operator[](unsigned int n);
+	helping_class operator[](unsigned int n);
 	char operator=(bool value);
 	void set_true(int n);
 	void set_false(int n);
 	void append(bool value);
-
 	
-
 	void dump(std::string output_name);
 };
 
@@ -75,15 +81,15 @@ void bool_array::strip()
 	data = tmp;
 }
 
-bool bool_array::operator[](unsigned int n)
-{
-	if (n >= count_of_blocks*8)
-	{
-		assert(!"ВЫХОД ЗА ПРЕДЕЛЫ БУЛЕВСКОГО МАССИВА");
-	}
+// bool bool_array::operator[](unsigned int n)
+// {
+// 	if (n >= count_of_blocks*8)
+// 	{
+// 		assert(!"ВЫХОД ЗА ПРЕДЕЛЫ БУЛЕВСКОГО МАССИВА");
+// 	}
 
-	return (data[n/8] & (1 << (n%8)));
-}
+// 	return (data[n/8] & (1 << (n%8)));
+// }
 
 using std::cout;
 using std::endl;
@@ -137,4 +143,35 @@ void bool_array::set_true(int n)
 unsigned int bool_array::length()
 {
 	return count_of_blocks*8;
+}
+
+helping_class bool_array::operator[](unsigned int n)
+{
+	helping_class tmp;
+	tmp.data = &data[n / 8];
+	tmp.number = n % 8;
+
+	return tmp;
+}
+
+void helping_class::operator=(bool value)
+{
+	if (value)
+		*data = (*data | (1 << number));
+	else
+		*data = (*data & (255 - (1 << number)));
+}
+
+std::ostream& operator<<(std::ostream& out, helping_class t)
+{
+	if (*t.data & (1 << t.number))
+	{
+		out << 1;
+	}
+	else
+	{
+		out << 0;
+	}
+
+	return out;
 }

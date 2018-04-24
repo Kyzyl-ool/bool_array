@@ -5,12 +5,14 @@ int main()
 {
 	bool_array t(4);
 
+	for (int i = 0; i < t.length(); ++i)
+	{
+		t[i] = true;
+	}
 	for (int i = 0; i < t.length(); i += 5)
 	{
-		t.set_true(i);
+		t[i] = false;
 	}
-	t.set_false(8);
-
 
 	t.dump("stdout");
 
@@ -18,6 +20,8 @@ int main()
 	{
 		cout << t[i];
 	}
+
 	cout << endl;
+	
 	return 0;
 }
