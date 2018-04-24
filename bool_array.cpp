@@ -9,25 +9,39 @@ using std::calloc;
 class bool_array
 {
 private:
-	char* data;
+	char* data; unsigned int count;
 	unsigned int count_of_blocks;
+public:
+	bool_array();
+	bool_array(int n);
+	~bool_array();
+
+	unsigned int length();
 
 	void expand();
 	void strip();
-public:
-	bool_array();
-	~bool_array();
 
 	bool operator[](unsigned int n);
 	char operator=(bool value);
+	void set_true(int n);
+	void set_false(int n);
+	void append(bool value);
+
+	
 
 	void dump(std::string output_name);
 };
 
-bool_array::bool_array()
+bool_array::bool_array():
+count_of_blocks(1)
 {
 	data = (char* )calloc(1, sizeof(char));
-	count_of_blocks = 1;
+}
+
+bool_array::bool_array(int n):
+count_of_blocks(n)
+{
+	data = (char* )calloc(n, sizeof(char));
 }
 
 bool_array::~bool_array()
@@ -68,7 +82,7 @@ bool bool_array::operator[](unsigned int n)
 		assert(!"ВЫХОД ЗА ПРЕДЕЛЫ БУЛЕВСКОГО МАССИВА");
 	}
 
-	return (data[n/8] & (1 << (7 - n%8)));
+	return (data[n/8] & (1 << (n%8)));
 }
 
 using std::cout;
@@ -82,19 +96,45 @@ void bool_array::dump(std::string output_name)
 	}
 	else
 	{
-		cout << "bool_array dump. Status: " << "NONE.\n";
+		cout << "bool_array dump.\n";
 		cout << "{" << endl << "	count_of_blocks: " << count_of_blocks << endl << "	data: ";
 		for (int i = 0; i < count_of_blocks; ++i)
 		{
-			cout << (data[i] & 0b10000000)/128;
-			cout << (data[i] & 0b01000000)/64;
-			cout << (data[i] & 0b00100000)/32;
-			cout << (data[i] & 0b00010000)/16;
-			cout << (data[i] & 0b00001000)/8;
-			cout << (data[i] & 0b00000100)/4;
-			cout << (data[i] & 0b00000010)/2;
 			cout << (data[i] & 0b00000001);
+			cout << (data[i] & 0b00000010)/2;
+			cout << (data[i] & 0b00000100)/4;
+			cout << (data[i] & 0b00001000)/8;
+			cout << (data[i] & 0b00010000)/16;
+			cout << (data[i] & 0b00100000)/32;
+			cout << (data[i] & 0b01000000)/64;
+			cout << (data[i] & 0b10000000)/128;
+			cout << ' ';
 		}
 		cout << endl << "}" << endl;
 	}
+}
+
+void bool_array::set_false(int n)
+{
+	if (n >= (count_of_blocks+1)*8)
+		assert(!"ВЫХОД ЗА ДАЛЬНИЕ ПРЕДЕЛЫ БУЛЕВСКОГО МАССИВА");
+	else if (n >= count_of_blocks*8)
+		expand();
+
+	data[n / 8] = (data[n / 8] & (255 - (1 << n%8)));
+}
+
+void bool_array::set_true(int n)
+{
+	if (n >= (count_of_blocks+1)*8)
+		assert(!"ВЫХОД ЗА ДАЛЬНИЕ ПРЕДЕЛЫ БУЛЕВСКОГО МАССИВА");
+	else if (n >= count_of_blocks*8)
+		expand();
+
+	data[n / 8] = (data[n/8] | (1 << (n % 8)));
+}
+
+unsigned int bool_array::length()
+{
+	return count_of_blocks*8;
 }
