@@ -14,6 +14,8 @@ int main()
 		t[i] = false;
 	}
 
+	t[33] = true;
+
 	t.dump("stdout");
 
 	for (int i = 0; i < 8; ++i)

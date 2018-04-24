@@ -147,6 +147,11 @@ unsigned int bool_array::length()
 
 helping_class bool_array::operator[](unsigned int n)
 {
+	if (n >= (count_of_blocks+1)*8)
+		assert(!"ВЫХОД ЗА ДАЛЬНИЕ ПРЕДЕЛЫ БУЛЕВСКОГО МАССИВА");
+	else if (n >= count_of_blocks*8)
+		expand();
+	
 	helping_class tmp;
 	tmp.data = &data[n / 8];
 	tmp.number = n % 8;
